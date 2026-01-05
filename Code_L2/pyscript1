@@ -1,0 +1,14 @@
+#!/home/nvremort/venv/bin/python
+
+import math
+import numpy
+from Shapes import Point
+
+print("Hello world!")
+print("the binomial coefficient (4,2) is", math.comb(4,2))
+
+p1=Point(-23.567, 16.9)
+print("point p1 is equal to", p1)
+print("polar coordinates of p1 are: ", p1.polar().r, p1.polar().theta)
+
+

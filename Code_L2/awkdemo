@@ -1,0 +1,5 @@
+awk '{print $1; FS=","}' ocean-heat.csv
+awk -F, '{print $1}' ocean-heat.csv
+awk -F, 'NR > 6 {print $1}' ocean-heat.csv
+awk -F, 'NR > 6 {print $1}' ocean-heat.csv
+awk 'NR>6 {if ($3) print $1; FS=","; NF == 4}' ocean-heat.csv
