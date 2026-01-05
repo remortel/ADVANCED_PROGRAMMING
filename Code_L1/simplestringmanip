@@ -1,0 +1,32 @@
+#!/bin/bash
+# kijk in directory ~/tmp en ontneem alle files hun write permissie 
+
+VERBOSE=0
+if [[ $1 = -v ]]
+then
+    VERBOSE=1
+    shift
+fi
+
+DIRPLACE="${HOME}"/tmp
+
+
+if [ -d "$DIRPLACE" ]
+then 	
+   cd "$DIRPLACE"
+   COUNT=0
+   for ARG in "$DIRPLACE"/*
+   do # use [ ! -w "ARG" ] to check for non-write permission
+      [ -w "$ARG"  ] \
+  && { printf "Revoking write from %s\n" "$ARG"; \
+       let COUNT+=1 ; chmod a-w "$ARG"; } 
+   done
+fi
+
+
+
+
+if (( VERBOSE ))
+    then
+	printf "Given write permission to %d Files\n" $COUNT 
+fi

@@ -1,0 +1,21 @@
+#!/bin/bash
+# 
+# Demonstration of branching with case keyword
+#
+# 
+MYDIR=$1
+for FN in "$MYDIR"
+do 
+    case $FN in
+	*.gif) convert $FN ${FN%.gif}.pdf
+	    ;;
+	*.jpg) convert $FN ${FN%.jpg}.pdf
+	    ;;
+	*.tif | *.TIFF) convert $FN ${FN%.tif}.pdf
+	    ;;
+	*) printf "File not supported: %s" $FN
+	    ;;
+    esac
+done
+
+

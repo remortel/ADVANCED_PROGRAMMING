@@ -1,0 +1,35 @@
+#!/bin/bash
+# 
+# Demonstration of different kinds of loops
+#
+# 
+COUNT=0
+MAX=5
+while (( COUNT < MAX ))
+do
+let COUNT++
+printf " Count is %d\n" $COUNT
+done
+
+
+## loop over all lines of a file
+#make first a testfile.txt with some lines of text
+#
+COUNT=0
+cat ~/tmp/mytestfile1.txt | \
+while read MYLINE 
+do
+    let COUNT++
+    printf "My Line nr %d contains: %s\n" $COUNT "$MYLINE"
+
+done 
+## is equivalent with, mind that the if statement ignores empty lines
+COUNT=0
+while  read MYLINE
+do
+    if [[ $MYLINE ]]
+    then
+	let COUNT++
+	printf "Line nr %d contains: %s\n" $COUNT "$MYLINE"
+    fi
+done < ~/tmp/mytestfile1.txt 

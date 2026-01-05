@@ -1,0 +1,10 @@
+#!/bin/bash
+# deteremine whether you run interactively
+
+case "$-" in
+     *i*) echo 'Running interactively'# Code for interactive shell here
+     	  ;;
+     *) echo 'nope'
+          # Code for non-interactive shell here
+          ;;
+esac

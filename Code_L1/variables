@@ -1,0 +1,28 @@
+#!/bin/bash
+#Printing user defined variables
+
+MYTEXT="GigaHerz"
+MYFREQ=1.92735
+#use export MYFREQ if you want other scripts besides this one to 'know'
+#about the value of MYFREQ
+# set the LC_NUMERIC environment variable to the following value for
+# displaying floating point numbers
+export LC_NUMERIC="en_US.UTF-8"
+# You can display all locale variables by typing the command locale
+
+printf '%-10.10s = %4.2f\n' $MYTEXT $MYFREQ
+ 
+#variables can also be combined, use {} for improved readability
+MYFILE=${PWD}/bin/variables
+
+echo 'My File is ' $MYFILE
+
+#variables can also be passed to the script as parameters
+# use as ./variables <parameter>
+# $# is another special vraiable that holds the number of arguments 
+# passed on to a script
+
+if (( $# == 1 ))
+then 
+    printf '%s %s\n' "My input was " $1
+fi

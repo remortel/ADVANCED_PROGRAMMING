@@ -1,0 +1,5 @@
+#!/bin/bash
+#Printing with proper formatting
+
+printf '%-10.10s = %4.2f\n' 'GigaHerz' 1.92735
+

@@ -1,0 +1,30 @@
+#!/bin/bash
+#Printing a list of arguments (with spaces in names) provided by user
+#test by making a directory ~/tmp
+#put 4 files in it by 
+#touch ~/tmp/file1.txt ~/tmp/file2.txt ~/tmp/file3.txt ~/tmp/"File name 1.txt"
+#the use teh script by typing 
+#try ./loopingwithflags -v ~/tmp/*.txt 
+#  and ./loopingwithflags ~/tmp/*.txt 
+
+#parse the option flag
+#shift will remove the first option from teh argument list
+# so you can loop over the rest like normally
+
+VERBOSE=0
+if [[ $1 = -v ]]
+then
+    VERBOSE=1
+    shift
+fi
+
+COUNT=0
+
+for ARG in "$@"
+do
+    let COUNT+=1 
+    if (( VERBOSE ))
+    then
+	printf "Argument %d   is %s\n" $COUNT "$ARG"
+    fi
+done

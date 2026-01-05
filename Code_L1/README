@@ -1,0 +1,5 @@
+download de file voorbeelden.tar in een directory onder je 
+$HOME folder
+untar de bestanden in de archive door
+
+tar -xvf voorbeelden.tar

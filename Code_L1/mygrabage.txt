@@ -1,0 +1,2 @@
+GigaHerz   = 1.93
+GigaHerz   = 1.93

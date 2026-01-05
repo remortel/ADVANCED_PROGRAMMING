@@ -1,0 +1,31 @@
+#!/bin/bash
+# 
+# Demonstration of different kinds of loops
+#
+# 
+for (( i=0 ; i < 10 ; i++ )) 
+do 
+    echo $i 
+done
+## works also with list
+for i in a b c d e
+do 
+    echo $i 
+done
+##
+# several counters can be incremented simultaneously
+# mind the double brackets for evaulating arithmetic expressions
+# watch out: this is not identical to two nested for loops
+for (( i=0, j=0 ; i+j < 10 ; i++, j++ ))
+do
+    echo $((i*j))
+done
+## for floating point arithmetic, use seq to generate the numbers
+## counting from 1 to 1.1 in steps of 0.01
+## arbitary precision arithmetic can be performed by the bc command
+for fp in $(seq 1.0 .01 1.1)
+do
+    echo $fp
+# raise fp to power 2
+    echo "scale=20; $fp^2" | bc 
+done

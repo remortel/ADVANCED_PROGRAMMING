@@ -1,0 +1,40 @@
+#!/bin/bash
+# change file names
+#test by making a directory ~/tmp
+#put 4 files in it by 
+#touch ~/tmp/file1.txt ~/tmp/file2.txt ~/tmp/file3.txt ~/tmp/"File name 1.txt"
+
+VERBOSE=0
+if [[ $1 = -v ]]
+then
+    VERBOSE=1
+    shift
+fi
+
+DIRPLACE="${HOME}"/tmp
+
+
+if [ -d "$DIRPLACE" ]
+then 	
+   cd "$DIRPLACE"
+   COUNT=0
+   for ARG in "$DIRPLACE"/*
+   do
+	let COUNT+=1 
+	NOTXT=${ARG%txt}
+	NEWNAME=${NOTXT}batch
+       	if (( VERBOSE ))
+	then
+		printf "replacing file %s with %s\n" "$ARG" "$NEWNAME"
+		mv "$ARG" "$NEWNAME"
+	fi	
+   done
+fi
+
+
+
+
+if (( VERBOSE ))
+    then
+	printf "Replaced %d Files\n" $COUNT 
+fi

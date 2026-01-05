@@ -1,0 +1,19 @@
+#!/bin/bash
+#Printing a list of arguments (with spaces in names) provided by user
+#test by making a directory ~/tmp
+#put 4 files in it by 
+#touch ~/tmp/file1.txt ~/tmp/file2.txt ~/tmp/file3.txt ~/tmp/"File name 1.txt"
+#the use teh script by typing 
+#./loopingnameswithspaces ~/tmp/*.txt 
+
+
+
+printf '%s %4.2f\n' "My number of inputs is " $#
+
+COUNT=0
+
+for ARG in "$@"
+do
+    let COUNT+=1 
+    printf "Argument %d   is %s\n" $COUNT "$ARG"
+done

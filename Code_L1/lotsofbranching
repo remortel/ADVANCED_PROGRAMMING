@@ -1,0 +1,23 @@
+#!/bin/bash
+#uitgebreid voorbeeld met if statements
+#syntax: if (( logical expression1 )) then elif (( logical expression2 ))
+#else (( logical expression2 )) fi
+# note: the double braces (( )) can be replaced by single brackets [ ], but
+# in this case the logical operators >, < , ==, .. become -gt, -lt, -eq, ...
+#
+## example of testing number fo arguments
+#
+if [ $# -lt 3 ]
+then
+printf "%b" "Error. Not enough arguments.\n"
+exit 1
+elif [ $# -gt 3 ]
+then
+printf "%b" "Error. Too many arguments.\n"
+exit 2
+else
+printf "%b" "Argument count correct. Proceeding...\n"
+fi
+
+# Logical operators -a (for AND) and -o (for OR) can be used to combine
+# more than one test
