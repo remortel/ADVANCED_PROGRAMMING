@@ -18,49 +18,61 @@ def fetch_data(data_url=DATA_URL, data_path=DATA_PATH):
         print("Downloading", filename)
         urllib.request.urlretrieve(data_url + filename, data_path + filename)
 
-
+# Uncomment this line if you want to fetch the data
+# no need to do this twice
 #fetch_data()
 
 
 # Load the data
-oecd_bli = pd.read_csv(DATA_PATH+ "oecd_bli_2015.csv", thousands=',')
+oecd_bli = pd.read_csv(DATA_PATH+ "oecd_bli_2015.csv", encoding='utf-8-sig', thousands=',')
 gdp_per_capita = pd.read_csv(DATA_PATH + "gdp_per_capita.csv",thousands=',',delimiter='\t',
                              encoding='latin1', na_values="n/a")
-# show the data heads
-# uncomment this if you wat to  show all the columns
-#pd.set_option('display.max_columns', None)
-#print(oecd_bli.head())
-#print(gdp_per_capita.head())
-# now get some info on the data
-#print(oecd_bli.info())
-#print(gdp_per_capita.info())
 
-# some columns contain useful information
-# let's print a random sample of 20
-print(oecd_bli.sample(n=20).loc[:,["Country","INEQUALITY","Indicator", "Value"]])
+print("=====================================================================\n"
+      "= TAKE NOTE, THE BETTER LIFE INDEX DATA IS IN LONG FORMAT\n"
+      "= THIS MEANS THAT EACH INDICATOR AND ITS VALUE IS LISTED IN BLOCKS\n"
+      "= AND THAT EACH COUNTRY WILL APPEAR MAMNY TIMES IN THIS LIST\n"
+      "= LET US INVESTIGATE TOGETHER WHAT KIND OF DATA WE ARE DEALING WITH\n"
+      "=====================================================================")
+print(" LET US START WITH SOME INFO ON THE BLI FILE: ")
+oecd_bli.info()
+print(" NUMBER OF COUNTRY ENTRIES IN THE DATA:   \n", oecd_bli["Country"].value_counts() )
+print(" INDICATORS ENCOUTERED IN THE DATA: \n", oecd_bli["Indicator"].value_counts())
+print(" LET US START WITH SOME INFO ON THE GDP FILE: ")
+gdp_per_capita.info()
+print(" NUMBER OF COUNTRY ENTRIES IN THE DATA:   \n", gdp_per_capita["Country"].value_counts())
+pd.set_option('display.max_columns', None)
+print(" FIRST 10 ENTRIES IN THE DATA:   \n", gdp_per_capita.head(10) )
+print(" It seems that column 2015 has the relevant gdp per capita in USD")
+
 # prepare the data
 def prepare_country_stats(oecd_bli, gdp_per_capita):
     oecd_bli = oecd_bli[oecd_bli["INEQUALITY"]=="TOT"]
     oecd_bli = oecd_bli.pivot(index="Country", columns="Indicator", values="Value")
-    # let's print a random sample of 20 rows of the transformed data frame
-    #print(oecd_bli.sample(n=20))
+    print(oecd_bli.columns.tolist())  # Now you'll see all 24 indicators
+    print(oecd_bli.head(10))
+    # Change name of column "2015" of the GDP data frame to "GDP per capita"
     gdp_per_capita.rename(columns={"2015": "GDP per capita"}, inplace=True)
+    # set the index of the GDP file to "Country" instead of a number
     gdp_per_capita.set_index("Country", inplace=True)
     full_country_stats = pd.merge(left=oecd_bli, right=gdp_per_capita,
                                   left_index=True, right_index=True)
     full_country_stats.sort_values(by="GDP per capita", inplace=True)
     # show the head of the new dataframe
     #pd.set_option('display.max_columns', None)
-    #print(full_country_stats.iloc[:10, : ])
+    print(full_country_stats.shape)
+    print(full_country_stats.iloc[:10, : ])
     # check for NaN values
-    #print(full_country_stats[full_country_stats.isna().any(axis=1)])
+    print(" CHECKING for NaN: ")
+    print(full_country_stats[full_country_stats.isna().any(axis=1)])
+    print(" REMOVING SOME OUTLIERS: ")
     remove_indices = [0, 1, 6, 8, 33, 34, 35]
-    #remove_indices = []
+    # remove_indices = []
     keep_indices = list(set(range(36)) - set(remove_indices))
     return full_country_stats[["GDP per capita", 'Life satisfaction']].iloc[keep_indices]
 
 country_stats = prepare_country_stats(oecd_bli, gdp_per_capita)
-print(country_stats.iloc[:10])
+#print(country_stats.iloc[:10])
 X = np.c_[country_stats["GDP per capita"]]
 y = np.c_[country_stats["Life satisfaction"]]
 
