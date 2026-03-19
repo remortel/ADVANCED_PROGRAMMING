@@ -239,7 +239,7 @@ train_accuracies, val_accuracies = [], []
 val_precisions                   = []
 
 if __name__ == '__main__':
-    epochs = 50
+    epochs = 10
     time0 = time()
 
     epoch_bar = tqdm(range(1, epochs + 1), desc="Epochs", unit="epoch", colour="yellow")
