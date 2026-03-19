@@ -1,0 +1,28 @@
+#!/bin/bash
+#Printing user defined variables
+# This script illustrates the use of argument lists
+# $* treats all arguments as a single string
+# $@ treats the arguments as an array of strings
+# try trunning this script as ./loopingvariables one two "three four"
+
+printf '%s %4.2f\n' "My number of inputs is " $#
+
+echo "Using \"\$*\":"
+for a in "$*"; do
+    echo $a;
+done
+
+echo -e "\nUsing \$*:"
+for a in $*; do
+    echo $a;
+done
+
+echo -e "\nUsing \"\$@\":"
+for a in "$@"; do
+    echo $a;
+done
+
+echo -e "\nUsing \$@:"
+for a in $@; do
+    echo $a;
+done              

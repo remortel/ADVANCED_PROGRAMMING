@@ -38,10 +38,10 @@ if __name__ == "__main__":
     logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
 
-    # database = FakeDatabase_nolock() # uncomment this is you want unsafe behavior
+    #database = FakeDatabase_nolock() # uncomment this is you want unsafe behavior
     database = FakeDatabase_lock()
     logging.info("Testing update. Starting value is %d.", database.value)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        for index in range(5):
+    with concurrent.futures.ThreadPoolExecutor(max_workers=15) as executor:
+        for index in range(15):
             executor.submit(database.update, index)
     logging.info("Testing update. Ending value is %d.", database.value)

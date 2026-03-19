@@ -115,7 +115,7 @@ In the forward method you pass the incoming data x through
 each of your layers. For more info on linear models see:
 https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
 
-After passing data trough a layer of neutrons
+After passing data trough a layer of neurons
 you need to trigger the neurons with an activation function.
 Standard activation functions are contained in the nn.functional
 library. The rectified linear unit function, or relu() is 

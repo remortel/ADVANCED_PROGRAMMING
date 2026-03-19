@@ -6,12 +6,12 @@ result = []
 
 def add_500_no_lock(total):
     for i in range(100):
-        time.sleep(0.01)
+        time.sleep(0.001)
         total.value +=5
 
 def sub_500_no_lock(total):
     for i in range(100):
-        time.sleep(0.01)
+        time.sleep(0.001)
         total.value -=5
 
 

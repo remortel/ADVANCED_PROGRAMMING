@@ -36,17 +36,19 @@ def insert_value2(array, value):
 filename = 'profile.prof'  # You can change this if needed
 # Set up the profiler
 profiler = Profile()
-profiler.enable()
+# If you manually enable and disable the profiler, it will profile anything in between those calls
+# ALternative: call runcall from the profiler and give it as argument the function and arguments of the functiony ou want to profile
+# profiler.enable()
 max_size = 10**5
 #max_size = 10
 data = [randint(0, max_size) for _ in range(max_size)]
-sort1 = insertion_sort(data)
+sort1 = profiler.runcall(insertion_sort,data)
 data = [randint(0, max_size) for _ in range(max_size)]
 sort2 = insertion_sort2(data)
 
 
 profiler.create_stats()
-profiler.disable()
+#profiler.disable()
 #stats.strip_dirs()
 #stats.sort_stats('cumulative')
 #stats.print_stats()

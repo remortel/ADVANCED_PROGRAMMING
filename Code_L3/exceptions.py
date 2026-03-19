@@ -13,7 +13,7 @@ def divider(numerator, denominator):
 #print(divider(5, 0))
 # try to do other decent things
 # will this execute?
-print(divider(5, 10))
+#print(divider(5, 10))
 
 # now put the statemnt in a try block
 

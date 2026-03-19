@@ -10,12 +10,13 @@ from tqdm import tqdm
 from io import StringIO
 from functools import wraps
 import logging
+from memory_profiler import profile
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 ### here is define my function profiling decorator
 ## Note that decorators can take arguments as well
-def profile(output_file=None, sort_by='cumulative', limit=20):
+def myprofile(output_file=None, sort_by='cumulative', limit=20):
     """Decorator to profile a function
 
     Args:
@@ -51,15 +52,15 @@ def profile(output_file=None, sort_by='cumulative', limit=20):
 
         return wrapper
     return decorator
-
-@profile(output_file='inser.prof', sort_by='cumtime', limit=10)
+@profile
+@myprofile(output_file='inser.prof', sort_by='cumtime', limit=10)
 def insertion_sort(data):
     result = []
     for value in data:
         insert_value(result, value)
     return result
-
-@profile(output_file='inser2.prof', sort_by='cumtime', limit=10)
+@profile
+@myprofile(output_file='inser2.prof', sort_by='cumtime', limit=10)
 def insertion_sort2(data):
     result = []
     for value in data:

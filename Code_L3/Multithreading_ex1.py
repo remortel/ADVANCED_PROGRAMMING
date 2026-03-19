@@ -18,5 +18,5 @@ if __name__ == "__main__":
     logging.info("Main    : before running thread")
     x.start()
     logging.info("Main    : wait for the thread to finish")
-    # x.join() #test what happens if you uncomment this line
+    x.join() #test what happens if you uncomment this line
     logging.info("Main    : all done")

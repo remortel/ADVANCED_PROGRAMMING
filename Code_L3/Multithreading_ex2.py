@@ -8,6 +8,7 @@ def thread_function(name):
     logging.info("Thread %s: starting", name)
     time.sleep(i)
     logging.info("Thread %s: finishing", name)
+
 '''
 if __name__ == "__main__":
     format = "%(asctime)s: %(message)s"

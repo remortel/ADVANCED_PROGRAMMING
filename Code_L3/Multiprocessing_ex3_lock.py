@@ -6,14 +6,14 @@ import logging
 
 def add_500_lock(total,lock):
     for i in range(100):
-        time.sleep(0.01)
+        time.sleep(0.1)
         lock.acquire()
         total.value +=5
         lock.release()
 
 def sub_500_lock(total,lock):
     for i in range(100):
-        time.sleep(0.01)
+        time.sleep(0.1)
         lock.acquire()
         total.value -=5
         lock.release()

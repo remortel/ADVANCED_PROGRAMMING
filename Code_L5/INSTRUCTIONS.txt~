@@ -1,0 +1,98 @@
+For GPU assisted calculations you typically need an NVIDIA graphica card
+
+Below is a working CONDA setup with recent versions of the Python compiler (ver 3.14).
+I order to check whether you have an NVIDIA graphics card with proper CUDA support
+type the following command in your terminal:
+nvidia-smi
+
+It should show you a summary table that is similar to the table below:
+
+
+Wed Mar 18 16:26:30 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.09             Driver Version: 580.126.09     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA RTX PRO 2000 Blac...    Off |   00000000:01:00.0 Off |                  N/A |
+| N/A   33C    P4             10W /   50W |      14MiB /   8151MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            2462      G   /usr/lib/xorg/Xorg                        4MiB |
++-----------------------------------------------------------------------------------------+
+
+There are three important types of information in this output:
+1. The type of your graphics card. In my case: NVIDIA RTX PRO 2000 Blackwell Generation Laptop GPU
+2. The index number of your GPU. In most cases, this index is 0 if you have only one graphics card installed,
+    but it can vary of you re-start a new shell.
+3. The highest version of the CUDA library that this graphics card, and its NVIDIA driver (in my case: Driver Version: 580.126.09)
+   is able to support.In my case, this is CUDA Version: 13.0
+
+
+Once you know which CUDA version your graphics card can support, you can install the Pytorch machine learning library with the option of GPU
+support via the CUDA libraries.
+NOTE: The pytorch library can not be installed via conda install, as of pytorch release version 2.6.0. The latest pytorch version as of March 2026 is
+version 2.10.0. Version 2.10.0 is fully compatible with pyton version 3.14, and with CUDA 13.0.
+The installation of pytorch and its additional libraries for audio and graphics processing thus has to be done via pip install:
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130
+
+More information on the pip install options you can provide for other combinations of Operating System, CUDA versions etc can be found on:
+https://pytorch.org/get-started/locally/
+As you can see from this page, Pytorch also supports the ROCm7.1 library version that corresponds to the AMD Radeon family of graphics cards.
+For a full cpompatibility matrix, see this webpage:
+https://rocm.docs.amd.com/en/docs-7.0.1/compatibility/compatibility-matrix.html
+
+Check carefully during the pytorch installation for warnings or eroor messages!
+After a succesful inatallation, you should see the following CUDA libraries installed via the command:
+conda list cuda
+and
+conda list torch
+
+(mypythonenv) nvremort@nvremort:~/PycharmProjects/ADVANCED_PROGRAMMING/Code_L5$ conda list cuda
+# packages in environment at /home/nvremort/miniconda3/envs/mypythonenv:
+#
+# Name                     Version          Build            Channel
+cuda-bindings              13.0.3           pypi_0           pypi
+cuda-pathfinder            1.2.2            pypi_0           pypi
+nvidia-cuda-cupti          13.0.85          pypi_0           pypi
+nvidia-cuda-nvrtc          13.0.88          pypi_0           pypi
+nvidia-cuda-runtime        13.0.96          pypi_0           pypi
+
+
+(mypythonenv) nvremort@nvremort:~/PycharmProjects/ADVANCED_PROGRAMMING/Code_L5$ conda list torch
+# packages in environment at /home/nvremort/miniconda3/envs/mypythonenv:
+#
+# Name                     Version          Build            Channel
+torch                      2.10.0+cu130     pypi_0           pypi
+torchaudio                 2.10.0+cu130     pypi_0           pypi
+torchvision                0.25.0+cu130     pypi_0           pypi
+
+
+you can now test whether you can use the pytorch library with CUDA support by typing the following code
+in the python terminal:
+
+
+import torch
+print(torch.__version__)
+print(torch.cuda.is_available())   # should return True
+print(torch.version.cuda)          # should show 13.0
+
+(mypythonenv) nvremort@nvremort:~/PycharmProjects/ADVANCED_PROGRAMMING/Code_L5$ python3
+Python 3.14.2 | packaged by Anaconda, Inc. | (main, Dec 19 2025, 11:49:32) [GCC 14.3.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import torch
+>>> print(torch.__version__)
+2.10.0+cu130
+>>> print(torch.cuda.is_available()) 
+True
+>>> print(torch.version.cuda) 
+13.0
+
