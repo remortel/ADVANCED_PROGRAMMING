@@ -51,11 +51,14 @@ As you can see from this page, Pytorch also supports the ROCm7.1 library version
 For a full compatibility matrix, see this webpage:
 https://rocm.docs.amd.com/en/docs-7.0.1/compatibility/compatibility-matrix.html
 
-NOTE: If you don't have a moder graphical card that is not supprting pytorch, you can install pytorch without GPU support:
+NOTE:
+1. On elpc1, the latest CUDA version that is suppoirted is 12.7, looking ath ethe pytorch installation options, we can see that we have to install pytoirch with CUDA 12.6 in this case, so on elpc1, install pytorch with
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+2. If you don't have a moder graphical card that is not supprting pytorch, you can install pytorch without GPU support:
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 Check carefully during the pytorch installation for warnings or eroor messages!
-After a succesful inatallation, you should see the following CUDA libraries installed via the command:
+After a succesful installation, you should see the following CUDA libraries installed via the command:
 conda list cuda
 and
 conda list torch
