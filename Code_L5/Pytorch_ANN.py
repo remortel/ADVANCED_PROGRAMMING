@@ -6,6 +6,9 @@ from torch import nn
 import torch.nn.functional as F
 import torch.optim as optim
 from time import time
+from tqdm import tqdm
+from sklearn.metrics import precision_score
+import matplotlib.pyplot as plt
 
 # Print the pytorch version number
 print(f"Using Pytorch version {torch.__version__}")
@@ -26,7 +29,7 @@ if device  == "cuda":
           \n reserved: {torch.cuda.memory_reserved(0)} \
           \n allocated: {torch.cuda.memory_allocated(0)}"
           )
-
+    print(f"Maximum Batch size: {cuda_mem * batch_size / X_t.nbytes}")
 '''
 A Transformer is a pipeline of methods applied to the data fed to your
 neural net. Transformation is needed to condition your data for proper training.
@@ -56,11 +59,11 @@ batch_size = 64
 trainloader = DataLoader(trainset,
                          batch_size=batch_size,
                          shuffle=True,
-                         num_workers=4)
+                         num_workers=16)
 valloader = DataLoader(valset,
                        batch_size=batch_size,
                        shuffle=True,
-                       num_workers=4)
+                       num_workers=16)
 # Inspect the training set and validation set
 ntrain = len(trainset)
 nval = len(valset)
@@ -178,70 +181,119 @@ print(optimizer)
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
+    num_batches = len(dataloader)
     model.train()
-    print(f"Training the model over all data. Size= {size}")
-    batch_count = 0
-    for batch, (X, y) in enumerate(dataloader):
-        batch_count += 1
-        '''
-        if batch == 0:
-            print(f"batch nr is: {batch}")
-            print(f"Size of X: {X.size()}")
-            print(f"Length of X: {len(X)}")
-            print(f"Size of y: {y.size()}")
-            print(f"Length of y: {len(y)}")
-        '''
-        X, y = X.to(device), y.to(device)
+    train_loss, correct = 0, 0
 
-        # Compute prediction error
+    progress_bar = tqdm(dataloader, desc="Training", leave=False,
+                        unit="batch", colour="blue")
+
+    for batch, (X, y) in enumerate(progress_bar):
+        X, y = X.to(device), y.to(device)
         pred = model(X)
-        '''
-        if batch == 0:
-            print(f"prediction is: {pred}")
-        '''
         loss = loss_fn(pred, y)
-        '''
-        if batch == 0:
-            print(f"batch nr is: {batch}")
-            print(f"Size of loss: {loss.size()}")
-            print(f"Value of loss: {loss}")
-        '''
-        # Backpropagation
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()
-        # print(f"batch count = {batch_count}")
-        if batch % 100 == 0:
-            loss, current = loss.item(), (batch + 1) * len(X)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        train_loss += loss.item()
+        correct += (pred.argmax(1) == y).type(torch.float).sum().item()
 
+        # Update progress bar with live loss
+        progress_bar.set_postfix(loss=f"{loss.item():.4f}")
+
+    train_loss /= num_batches
+    accuracy = correct / size
+    return train_loss, accuracy
 def test(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
-    print(f"Nr of validation batches: {num_batches}")
     model.eval()
     test_loss, correct = 0, 0
-    #print("testing over whole test set")
+    all_preds, all_labels = [], []
+
+    progress_bar = tqdm(dataloader, desc="Validation", leave=False,
+                        unit="batch", colour="green")
+
     with torch.no_grad():
-        for X, y in dataloader:
-            #print(f"Size of X: {X.size()}")
-            #print(f"Size of y: {y.size()}")
+        for X, y in progress_bar:
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
-            #print(f"index of maximum value of predictions {pred.argmax(1)}")
-            correct += (pred.argmax(1) == y).type(torch.float).sum().item()
+            predicted = pred.argmax(1)
+            correct += (predicted == y).type(torch.float).sum().item()
+            all_preds.extend(predicted.cpu().numpy())
+            all_labels.extend(y.cpu().numpy())
+
+            # Update progress bar with live loss
+            progress_bar.set_postfix(loss=f"{test_loss/num_batches:.4f}")
+
     test_loss /= num_batches
-    correct /= size
-    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    accuracy = correct / size
+    precision = precision_score(all_labels, all_preds, average='macro', zero_division=0)
+    return test_loss, accuracy, precision
 
 # important, put the main training loop in the main() program, if you want to use multiprocessing
+# History containers
+train_losses, val_losses         = [], []
+train_accuracies, val_accuracies = [], []
+val_precisions                   = []
+
 if __name__ == '__main__':
     epochs = 50
     time0 = time()
-    for t in range(epochs):
-        print(f"Epoch {t+1}\n-------------------------------")
-        train(trainloader, model, loss_fn, optimizer)
-        test(valloader, model, loss_fn)
-    print("Done!")
-    print("\nTraining Time (in minutes) =", (time() - time0) / 60)
+
+    epoch_bar = tqdm(range(1, epochs + 1), desc="Epochs", unit="epoch", colour="yellow")
+
+    for t in epoch_bar:
+        train_loss, train_acc        = train(trainloader, model, loss_fn, optimizer)
+        val_loss, val_acc, val_prec  = test(valloader,   model, loss_fn)
+
+        train_losses.append(train_loss)
+        val_losses.append(val_loss)
+        train_accuracies.append(train_acc)
+        val_accuracies.append(val_acc)
+        val_precisions.append(val_prec)
+
+        # Update epoch bar with summary metrics
+        epoch_bar.set_postfix(
+            train_loss=f"{train_loss:.4f}",
+            val_loss=f"{val_loss:.4f}",
+            val_acc=f"{100*val_acc:.1f}%",
+            val_prec=f"{100*val_prec:.1f}%"
+        )
+
+    print("\nDone!")
+    print(f"Training Time (in minutes) = {(time()-time0)/60:.2f}")
+
+
+
+    epochs_range = range(1, epochs + 1)
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5))
+
+    # Loss
+    ax1.plot(epochs_range, train_losses, label="Train Loss")
+    ax1.plot(epochs_range, val_losses, label="Val Loss")
+    ax1.set_title("Loss")
+    ax1.set_xlabel("Epoch")
+    ax1.set_ylabel("Loss")
+    ax1.legend()
+
+    # Accuracy
+    ax2.plot(epochs_range, train_accuracies, label="Train Accuracy")
+    ax2.plot(epochs_range, val_accuracies, label="Val Accuracy")
+    ax2.set_title("Accuracy")
+    ax2.set_xlabel("Epoch")
+    ax2.set_ylabel("Accuracy")
+    ax2.legend()
+
+    # Precision
+    ax3.plot(epochs_range, val_precisions, label="Val Precision", color="green")
+    ax3.set_title("Precision (macro)")
+    ax3.set_xlabel("Epoch")
+    ax3.set_ylabel("Precision")
+    ax3.legend()
+
+    plt.suptitle("MNIST ANN Training Metrics", fontsize=14)
+    plt.tight_layout()
+    plt.savefig("training_metrics.png", dpi=150)  # saves to disk
+    plt.show()
