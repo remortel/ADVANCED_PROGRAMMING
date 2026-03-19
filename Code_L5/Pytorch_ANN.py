@@ -29,7 +29,7 @@ if device  == "cuda":
           \n reserved: {torch.cuda.memory_reserved(0)} \
           \n allocated: {torch.cuda.memory_allocated(0)}"
           )
-    print(f"Maximum Batch size: {cuda_mem * batch_size / X_t.nbytes}")
+    #print(f"Maximum Batch size: {cuda_mem * batch_size / X_t.nbytes}")
 '''
 A Transformer is a pipeline of methods applied to the data fed to your
 neural net. Transformation is needed to condition your data for proper training.
