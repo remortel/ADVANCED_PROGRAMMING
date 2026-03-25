@@ -52,9 +52,10 @@ For a full compatibility matrix, see this webpage:
 https://rocm.docs.amd.com/en/docs-7.0.1/compatibility/compatibility-matrix.html
 
 NOTE:
-1. On elpc1, the latest CUDA version that is suppoirted is 12.7, looking ath ethe pytorch installation options, we can see that we have to install pytoirch with CUDA 12.6 in this case, so on elpc1, install pytorch with
+1. On elpc1, the latest CUDA version that is supported is 12.7, looking at the pytorch installation options,
+we can see that we have to install pytorch with CUDA 12.6 in this case, so on elpc1, install pytorch with
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
-2. If you don't have a moder graphical card that is not supprting pytorch, you can install pytorch without GPU support:
+2. If you don't have a modern graphical card that is not supprting pytorch, you can install pytorch without GPU support:
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 Check carefully during the pytorch installation for warnings or eroor messages!
@@ -129,3 +130,59 @@ You should also see the utilisation.gpu and ultilisation.memory percentages go u
 (temperatures above 90 C are not recommended)
 
 
+
+
+INSTRUCTIONS FOR setting up a conda environment on elpc1:
+===========================================================
+
+To create your conda environment with the most stable python compiler version (3.11):
+
+conda create -n MACHINE_LEARNING python=3.11 -c conda-forge
+
+Then activate the conda environment:
+
+conda activate MACHINE_LEARNING
+
+
+You should see your prompt changing to something like (MACHINE_LEARNING) [nvremort@elpc1 Code_L5]
+
+now it's time to install libraries:
+
+
+1. Pytorch
+
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+
+2. SCIKIT LEARN
+
+conda install scikit-learn
+
+3. PANDAS:
+
+conda install pandas
+
+4. MATPLOTLIB
+
+conda install matplotlib
+
+5. MAKE SURE THAT LINUX SEARCHES FOR LIBRARIES FIRST IN YOUR CONDA ENVIRONMENT
+echo 'export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+
+
+Now you should be ready to download and run some examples:
+
+in your home directory, type
+
+git clone git@github.com:remortel/ADVANCED_PROGRAMMING.git
+
+you should now have a folder called ADVANCED_PROGRAMMING
+
+
+If you go to that folder
+
+cd ADVANCED_PROGRAMMING/Code_L5
+
+and execute
+
+python Pytorch_ANN.py
