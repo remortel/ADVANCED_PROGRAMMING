@@ -14,6 +14,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import cross_val_score
+from sklearn.svm import LinearSVR
 
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/refs/heads/master/"
@@ -260,3 +262,39 @@ tree_mse = mean_squared_error(housing_labels, housing_predictions)
 tree_rmse = np.sqrt(tree_mse)
 print("THE MEAN ERROR ON THE PREDICTIONS FROM THE DECISION TREE MODEL IS:", tree_rmse)
 
+# A mean RMSE of zero seems a bit unrealistic, so let's try to
+# train the DecisionTreeRegressor on several smaller batches of data
+# the cv=10 parameter indicates that the training data set will
+# be split in 10 subsets or folds
+# We will compare the average score from the DEcision Tree with the
+# average score from the Linear Regressor
+
+tree_scores = cross_val_score(tree_reg, housing_prepared, housing_labels,
+                        scoring="neg_mean_squared_error", cv=10)
+lin_scores = cross_val_score(lin_reg, housing_prepared, housing_labels,
+                        scoring="neg_mean_squared_error", cv=10)
+tree_rmse_scores = np.sqrt(-tree_scores)
+lin_rmse_scores = np.sqrt(-lin_scores)
+
+def display_scores(scores):
+    print("Scores:", scores)
+    print("Mean:", scores.mean())
+    print("Standard Deviation:", scores.std())
+
+print("THE SCORES FOR 10-FOLD CROSS VALIDATION OF THE DECISION TREE ARE:\n")
+display_scores(tree_rmse_scores)
+print("THE SCORES FOR 10-FOLD CROSS VALIDATION OF THE LINEAR REGRESSOR ARE:\n")
+display_scores(lin_rmse_scores)
+
+# Let's try a final model: a linear SVM
+SVR_reg=LinearSVR(C=150.0)
+SVR_reg.fit(housing_prepared, housing_labels)
+housing_predictions = SVR_reg.predict(housing_prepared)
+SVR_mse = mean_squared_error(housing_labels, housing_predictions)
+SVR_rmse = np.sqrt(SVR_mse)
+print("THE MEAN ERROR ON THE PREDICTIONS FROM THE SVR MODEL IS:", SVR_rmse)
+SVR_scores = cross_val_score(SVR_reg, housing_prepared, housing_labels,
+                        scoring="neg_mean_squared_error", cv=10)
+SVR_rmse_scores = np.sqrt(-SVR_scores)
+print("THE SCORES FOR 10-FOLD CROSS VALIDATION OF THE SVM Regressor ARE:\n")
+display_scores(SVR_rmse_scores)
